@@ -51,22 +51,15 @@ def time_target(csv_contents)
 def day_target(csv_contents)
 	days = []
 	csv_contents.each do |row|
-		days << DateTime.strptime(row[:regdate], '%m/%d/%Y %H:%M').to_date.strftime("%A") end
+		days << DateTime.strptime(row[:regdate], '%m/%d/%Y %H:%M').strftime("%A") end
 	count = days.map {|day| days.count(day)}
-	binding.pry
-	count.zip(days).uniq!.sort_by{|nest| nest[0]}.reverse!.each {|nest| nest[1].daytranslate}
+	count.zip(days).uniq!.sort_by{|nest| nest[0]}.reverse!
 end
-
-def daytranslate(day)
-	translator = { '0' => 'Sunday', '1' => 'Monday', '2' => "Tuesday", '3' => 'Wednesday', '4' => 'Thursday', '5' => 'Friday', '6' => 'Saturday'}
-	translator[day]
-end
-	
 
 
 puts "Event Manager Initialized!"
 
-contents = CSV.open "event_attendees.csv", headers: true, header_converters: :symbol
+contents = CSV.read "event_attendees.csv", headers: true, header_converters: :symbol
 
 template_letter = File.read "form_letter.erb"
 erb_template = ERB.new template_letter
@@ -74,7 +67,8 @@ erb_template = ERB.new template_letter
 puts "Time Target!!"
 print time_target(contents)
 
-puts "Day Target!!"
+
+puts "\nDay Target!!"
 print day_target(contents)
 
 contents.each do |row|
